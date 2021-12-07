@@ -3,12 +3,9 @@ package com.kirito.kiritomall.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.kirito.kiritomall.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.kirito.kiritomall.product.entity.AttrEntity;
 import com.kirito.kiritomall.product.service.AttrService;
@@ -33,14 +30,23 @@ public class AttrController {
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @GetMapping("/list")
     //@RequiresPermissions("product:attr:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = attrService.queryPage(params);
 
         return R.ok().put("page", page);
     }
+    /**
+     * 条件查询带分页列表
+     */
+    @GetMapping("base/list/{catId}")
+    //@RequiresPermissions("product:attr:list")
+    public R baseAttrList(@PathVariable("catId") Long catId,@RequestParam Map<String, Object> params){
+        PageUtils page = attrService.queryPageDetail(catId,params);
 
+        return R.ok().put("page", page);
+    }
 
     /**
      * 信息
@@ -58,9 +64,8 @@ public class AttrController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:attr:save")
-    public R save(@RequestBody AttrEntity attr){
-		attrService.save(attr);
-
+    public R save(@RequestBody AttrVo attrVo){
+		attrService.saveDetail(attrVo);
         return R.ok();
     }
 
