@@ -3,7 +3,15 @@ package com.kirito.kiritomall.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kirito.kiritomall.product.entity.AttrAttrgroupRelationEntity;
+import com.kirito.kiritomall.product.entity.AttrGroupEntity;
+import com.kirito.kiritomall.product.service.AttrAttrgroupRelationService;
+import com.kirito.kiritomall.product.service.AttrGroupService;
+import com.kirito.kiritomall.product.service.CategoryService;
+import com.kirito.kiritomall.product.vo.AttrRespVo;
 import com.kirito.kiritomall.product.vo.AttrVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +32,7 @@ import com.kirito.common.utils.R;
 @RestController
 @RequestMapping("product/attr")
 public class AttrController {
+
     @Autowired
     private AttrService attrService;
 
@@ -54,9 +63,9 @@ public class AttrController {
     @RequestMapping("/info/{attrId}")
     //@RequiresPermissions("product:attr:info")
     public R info(@PathVariable("attrId") Long attrId){
-		AttrEntity attr = attrService.getById(attrId);
+		AttrRespVo attrRespVo=attrService.getAttrInfo(attrId);
 
-        return R.ok().put("attr", attr);
+        return R.ok().put("attr", attrRespVo);
     }
 
     /**
@@ -66,6 +75,7 @@ public class AttrController {
     //@RequiresPermissions("product:attr:save")
     public R save(@RequestBody AttrVo attrVo){
 		attrService.saveDetail(attrVo);
+
         return R.ok();
     }
 
@@ -74,8 +84,8 @@ public class AttrController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("product:attr:update")
-    public R update(@RequestBody AttrEntity attr){
-		attrService.updateById(attr);
+    public R update(@RequestBody AttrVo attrVo){
+		attrService.updateAttr(attrVo);
 
         return R.ok();
     }

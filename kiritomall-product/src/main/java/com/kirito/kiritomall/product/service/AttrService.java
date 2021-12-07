@@ -3,6 +3,7 @@ package com.kirito.kiritomall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.product.entity.AttrEntity;
+import com.kirito.kiritomall.product.vo.AttrRespVo;
 import com.kirito.kiritomall.product.vo.AttrVo;
 
 import java.util.Map;
@@ -21,5 +22,9 @@ public interface AttrService extends IService<AttrEntity> {
     PageUtils queryPageDetail(Long catId,Map<String, Object> params);
 
     void saveDetail(AttrVo attrVo);
+
+    AttrRespVo getAttrInfo(Long attrId);
+
+    void updateAttr(AttrVo attrVo);
 }
 
