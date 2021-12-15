@@ -47,12 +47,14 @@ public class AttrController {
         return R.ok().put("page", page);
     }
     /**
-     * 条件查询带分页列表
+     * 条件查询带分页列表 base:基本属性 1  sale:销售属性 0   基本属性和销售属性:2
      */
-    @GetMapping("base/list/{catId}")
+    @GetMapping("{attrType}/list/{catId}")
     //@RequiresPermissions("product:attr:list")
-    public R baseAttrList(@PathVariable("catId") Long catId,@RequestParam Map<String, Object> params){
-        PageUtils page = attrService.queryPageDetail(catId,params);
+    public R attrList(@PathVariable("catId") Long catId,
+                          @RequestParam Map<String, Object> params,
+                          @PathVariable("attrType") String attrType){
+        PageUtils page = attrService.queryPageDetail(catId,params,attrType);
 
         return R.ok().put("page", page);
     }
