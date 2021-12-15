@@ -1,9 +1,13 @@
 package com.kirito.kiritomall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.kirito.kiritomall.product.entity.AttrEntity;
+import com.kirito.kiritomall.product.service.AttrAttrgroupRelationService;
 import com.kirito.kiritomall.product.service.CategoryService;
+import com.kirito.kiritomall.product.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +55,38 @@ public class AttrGroupController {
         PageUtils page = attrGroupService.queryPage(catId,params);
 
         return R.ok().put("page", page);
+    }
+
+    /**
+     * 获取属性分组关联的所有属性
+     */
+    @GetMapping("{attrgroupId}/attr/relation")
+    public R attrList(@PathVariable("attrgroupId") Long attrgroupId){
+        List<AttrEntity> attrList=attrGroupService.getAttrList(attrgroupId);
+        return R.ok().put("attrList",attrList);
+    }
+
+    /**
+     * 获取属性分组没有关联的其他属性
+     */
+    @GetMapping("{attrgroupId}/noattr/relation")
+    public R noattrList(@PathVariable("attrgroupId") Long attrgroupId,@RequestParam Map<String,Object> params){
+        PageUtils page = attrGroupService.getNoAttrList(attrgroupId, params);
+        return R.ok().put("page",page);
+    }
+    /**
+     * 新增属性与属性分组的关联关系
+     */
+    @PostMapping("attr/relation")
+    public R saveAttrRelations(@RequestBody List<AttrGroupRelationVo> vos){
+        attrGroupService.saveAttrRelations(vos);
+        return R.ok();
+    }
+
+    @PostMapping("attr/relation/delete")
+    public R deleteAttrRelations(@RequestBody List<AttrGroupRelationVo> vos){
+        attrGroupService.deleteAttrRelations(vos);
+        return R.ok();
     }
 
     /**

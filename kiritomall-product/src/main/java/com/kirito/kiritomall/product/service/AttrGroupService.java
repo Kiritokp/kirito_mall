@@ -2,8 +2,11 @@ package com.kirito.kiritomall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kirito.common.utils.PageUtils;
+import com.kirito.kiritomall.product.entity.AttrEntity;
 import com.kirito.kiritomall.product.entity.AttrGroupEntity;
+import com.kirito.kiritomall.product.vo.AttrGroupRelationVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +19,13 @@ import java.util.Map;
 public interface AttrGroupService extends IService<AttrGroupEntity> {
 
     PageUtils queryPage(Long catId,Map<String, Object> params);
+
+    List<AttrEntity> getAttrList(Long attrgroupId);
+
+    PageUtils getNoAttrList(Long attrgroupId,Map<String,Object> params);
+
+    void saveAttrRelations(List<AttrGroupRelationVo> vos);
+
+    void deleteAttrRelations(List<AttrGroupRelationVo> vos);
 }
 
