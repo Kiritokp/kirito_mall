@@ -36,17 +36,6 @@ public class AttrGroupController {
     private CategoryService categoryService;
 
     /**
-     * 列表
-     */
-    @RequestMapping("/list/{catId}")
-    //@RequiresPermissions("product:attrgroup:list")
-    public R list(@PathVariable("catId") Long catId,@RequestParam Map<String, Object> params){
-        PageUtils page = attrGroupService.queryPage(catId,params);
-
-        return R.ok().put("page", page);
-    }
-
-    /**
      * 根据当前分组获取所属分类列表
      */
     @GetMapping("/list/{catId}")

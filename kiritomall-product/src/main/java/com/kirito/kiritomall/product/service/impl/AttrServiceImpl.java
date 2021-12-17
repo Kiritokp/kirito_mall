@@ -84,9 +84,11 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                 //获取分组id
                 AttrAttrgroupRelationEntity attrAttrgroupRelationServiceOne = attrAttrgroupRelationService.getOne(new QueryWrapper<AttrAttrgroupRelationEntity>()
                         .eq("attr_id", attrEntity.getAttrId()));
-                Long groupId = attrAttrgroupRelationServiceOne.getAttrGroupId();
-                AttrGroupEntity attrGroupEntity = attrGroupService.getById(groupId);
-                attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());
+                if(attrAttrgroupRelationServiceOne!=null){
+                    Long groupId = attrAttrgroupRelationServiceOne.getAttrGroupId();
+                    AttrGroupEntity attrGroupEntity = attrGroupService.getById(groupId);
+                    attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());
+                }
             }
             Long catelogId = attrEntity.getCatelogId();
             CategoryEntity categoryEntity = categoryService.getById(catelogId);

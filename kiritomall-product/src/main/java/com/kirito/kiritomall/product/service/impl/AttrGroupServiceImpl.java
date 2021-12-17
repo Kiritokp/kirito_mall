@@ -71,25 +71,49 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Override
     public PageUtils getNoAttrList(Long attrgroupId,Map<String,Object> params) {
+        //需要显示的属性的特征
+        //1、当前分类下这个属性分组没有关联的
+        //1.1、根据属性分组id得到当前属性分组下已经关联的属性id
+        List<Long> attrIdList = attrAttrgroupRelationService.list(new QueryWrapper<AttrAttrgroupRelationEntity>()
+                .eq("attr_group_id", attrgroupId))
+                .stream().map(attrAttrgroupRelationEntity -> {
+                    Long attrId = attrAttrgroupRelationEntity.getAttrId();
+                    return attrId;
+                }).collect(Collectors.toList());
+
+        //2、当前分类下其他属性分组没有关联的
+        AttrGroupEntity attrGroupEntity = this.getById(attrgroupId);
+        Long catelogId = attrGroupEntity.getCatelogId();
+
+        QueryWrapper<AttrGroupEntity> groupEntityQueryWrapper = new QueryWrapper<AttrGroupEntity>()
+                .eq("catelog_id", catelogId)
+                .ne("attr_group_id", attrgroupId);
+        List<Long> attrGroupIdList = baseMapper.selectList(groupEntityQueryWrapper).stream()
+                .map(attrGroupEntity1 -> {
+                    Long attrGroupId1 = attrGroupEntity1.getAttrGroupId();
+                    return attrGroupId1;
+                }).collect(Collectors.toList());
+        List<Long> attrIdList2 = attrAttrgroupRelationService.list(new QueryWrapper<AttrAttrgroupRelationEntity>()
+                .in("attr_group_id", attrGroupIdList))
+                .stream().map(attrAttrgroupRelationEntity -> {
+                    Long attrId1 = attrAttrgroupRelationEntity.getAttrId();
+                    return attrId1;
+                }).collect(Collectors.toList());
+
+        QueryWrapper<AttrEntity> attrQueryWrapper = new QueryWrapper<AttrEntity>();
+        if(attrIdList!=null &&attrIdList.size()!=0){
+            attrQueryWrapper.notIn("attr_id", attrIdList);
+        }
+        if(attrIdList2!=null &&attrIdList2.size()!=0){
+            attrQueryWrapper.notIn("attr_id", attrIdList2);
+        }
+        attrQueryWrapper.eq("attr_type",1);
+
         String key = (String) params.get("key");
-
-        QueryWrapper<AttrAttrgroupRelationEntity> wrapper = new QueryWrapper<AttrAttrgroupRelationEntity>();
-        wrapper.ne("attr_group_id",attrgroupId);
-        //获取attrId
-        List<Long> attrIdList = attrAttrgroupRelationService.list(wrapper).stream().map(attrAttrgroupRelationEntity -> {
-            Long attrId = attrAttrgroupRelationEntity.getAttrId();
-            return attrId;
-        }).collect(Collectors.toList());
-
-        QueryWrapper<AttrEntity> queryWrapper = new QueryWrapper<>();
-        if (attrIdList.size()!=0){
-            queryWrapper.in("attr_id",attrIdList);
-        }
-
         if (!StringUtils.isEmpty(key)){
-            queryWrapper.eq("attr_id",key).or().like("attr_name",key);
+            attrQueryWrapper.eq("attr_id",key).or().like("attr_name",key);
         }
-        IPage<AttrEntity> page = attrService.page(new Query<AttrEntity>().getPage(params), queryWrapper);
+        IPage<AttrEntity> page = attrService.page(new Query<AttrEntity>().getPage(params), attrQueryWrapper);
         PageUtils pageUtils = new PageUtils(page);
 
         return pageUtils;
