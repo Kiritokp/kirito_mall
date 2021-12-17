@@ -1,5 +1,6 @@
 package com.kirito.kiritomall.product.service.impl;
 
+import com.kirito.common.constant.ProductConstant;
 import com.kirito.kiritomall.product.entity.AttrAttrgroupRelationEntity;
 import com.kirito.kiritomall.product.entity.AttrEntity;
 import com.kirito.kiritomall.product.service.AttrAttrgroupRelationService;
@@ -71,49 +72,33 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Override
     public PageUtils getNoAttrList(Long attrgroupId,Map<String,Object> params) {
-        //需要显示的属性的特征
-        //1、当前分类下这个属性分组没有关联的
-        //1.1、根据属性分组id得到当前属性分组下已经关联的属性id
-        List<Long> attrIdList = attrAttrgroupRelationService.list(new QueryWrapper<AttrAttrgroupRelationEntity>()
-                .eq("attr_group_id", attrgroupId))
-                .stream().map(attrAttrgroupRelationEntity -> {
-                    Long attrId = attrAttrgroupRelationEntity.getAttrId();
-                    return attrId;
-                }).collect(Collectors.toList());
-
-        //2、当前分类下其他属性分组没有关联的
+        //1.当前属性分组只能关联自己分类里面的所有属性
         AttrGroupEntity attrGroupEntity = this.getById(attrgroupId);
         Long catelogId = attrGroupEntity.getCatelogId();
+        //2.当前属性分组只能关联到同一分类下其他属性分组没有关联的属性
+        //2.1.当前分类下的所有属性分组id
+        List<AttrGroupEntity> group = this.list(new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catelogId));
+        List<Long> attrGroupIds = group.stream().map(item -> {
+            return item.getAttrGroupId();
+        }).collect(Collectors.toList());
 
-        QueryWrapper<AttrGroupEntity> groupEntityQueryWrapper = new QueryWrapper<AttrGroupEntity>()
-                .eq("catelog_id", catelogId)
-                .ne("attr_group_id", attrgroupId);
-        List<Long> attrGroupIdList = baseMapper.selectList(groupEntityQueryWrapper).stream()
-                .map(attrGroupEntity1 -> {
-                    Long attrGroupId1 = attrGroupEntity1.getAttrGroupId();
-                    return attrGroupId1;
-                }).collect(Collectors.toList());
-        List<Long> attrIdList2 = attrAttrgroupRelationService.list(new QueryWrapper<AttrAttrgroupRelationEntity>()
-                .in("attr_group_id", attrGroupIdList))
-                .stream().map(attrAttrgroupRelationEntity -> {
-                    Long attrId1 = attrAttrgroupRelationEntity.getAttrId();
-                    return attrId1;
-                }).collect(Collectors.toList());
+        //2.2.当前分类下所有分组关联的属性id
+        List<AttrAttrgroupRelationEntity> relationEntityList = attrAttrgroupRelationService.list(new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_group_id", attrGroupIds));
+        List<Long> attrIds = relationEntityList.stream().map(item -> {
+            return item.getAttrId();
+        }).collect(Collectors.toList());
 
-        QueryWrapper<AttrEntity> attrQueryWrapper = new QueryWrapper<AttrEntity>();
-        if(attrIdList!=null &&attrIdList.size()!=0){
-            attrQueryWrapper.notIn("attr_id", attrIdList);
+        //2.3.从当前分类的所有属性中移除这些属性id
+        QueryWrapper<AttrEntity> wrapper = new QueryWrapper<AttrEntity>().eq("catelog_id", catelogId).eq("attr_type", ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode());
+        if (attrIds!=null && attrIds.size()>0){
+            wrapper.notIn("attr_id",attrIds);
         }
-        if(attrIdList2!=null &&attrIdList2.size()!=0){
-            attrQueryWrapper.notIn("attr_id", attrIdList2);
-        }
-        attrQueryWrapper.eq("attr_type",1);
-
+        //3.条件查询
         String key = (String) params.get("key");
         if (!StringUtils.isEmpty(key)){
-            attrQueryWrapper.eq("attr_id",key).or().like("attr_name",key);
+            wrapper.eq("attr_id",key).or().like("attr_name",key);
         }
-        IPage<AttrEntity> page = attrService.page(new Query<AttrEntity>().getPage(params), attrQueryWrapper);
+        IPage<AttrEntity> page = attrService.page(new Query<AttrEntity>().getPage(params), wrapper);
         PageUtils pageUtils = new PageUtils(page);
 
         return pageUtils;
@@ -121,8 +106,8 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Override
     public void saveAttrRelations(List<AttrGroupRelationVo> vos) {
-        AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
         List<AttrAttrgroupRelationEntity> list = vos.stream().map(attrGroupRelationVo -> {
+            AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
             BeanUtils.copyProperties(attrGroupRelationVo, relationEntity);
             return relationEntity;
         }).collect(Collectors.toList());
