@@ -1,5 +1,6 @@
 package com.kirito.kiritomall.member.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,9 +19,14 @@ public class MemberLevelServiceImpl extends ServiceImpl<MemberLevelDao, MemberLe
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        QueryWrapper<MemberLevelEntity> wrapper = new QueryWrapper<>();
+        String keys= (String) params.get("key");
+        if (!StringUtils.isEmpty(keys)){
+            wrapper.eq("id",keys).or().like("name",keys);
+        }
         IPage<MemberLevelEntity> page = this.page(
                 new Query<MemberLevelEntity>().getPage(params),
-                new QueryWrapper<MemberLevelEntity>()
+                wrapper
         );
 
         return new PageUtils(page);
