@@ -3,7 +3,9 @@ package com.kirito.kiritomall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.product.entity.CategoryBrandRelationEntity;
+import com.kirito.kiritomall.product.vo.BrandVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,5 +22,8 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
     void saveDetail(CategoryBrandRelationEntity categoryBrandRelation);
 
     void updateBrand(Long brandId, String brandName);
+
+    List<BrandVo> getCategoryBrands(Long catId);
+
 }
 

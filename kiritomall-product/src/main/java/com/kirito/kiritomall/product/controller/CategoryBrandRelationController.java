@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kirito.kiritomall.product.vo.BrandVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,8 +57,7 @@ public class CategoryBrandRelationController {
     @GetMapping("brands/list")
     //@RequiresPermissions("product:categorybrandrelation:list")
     public R brandList(@RequestParam("catId") Long catId){
-        List<CategoryBrandRelationEntity> data = categoryBrandRelationService.list(
-                new QueryWrapper<CategoryBrandRelationEntity>().eq("catelog_id", catId));
+        List<BrandVo> data=categoryBrandRelationService.getCategoryBrands(catId);
         return R.ok().put("data", data);
     }
 

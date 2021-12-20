@@ -6,9 +6,15 @@ import com.kirito.kiritomall.product.entity.BrandEntity;
 import com.kirito.kiritomall.product.entity.CategoryEntity;
 import com.kirito.kiritomall.product.service.BrandService;
 import com.kirito.kiritomall.product.service.CategoryService;
+import com.kirito.kiritomall.product.vo.BrandVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -59,6 +65,18 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
         categoryBrandRelationEntity.setBrandName(brandName);
 
         this.update(categoryBrandRelationEntity,new UpdateWrapper<CategoryBrandRelationEntity>().eq("brand_id",brandId));
+    }
+
+    @Override
+    public List<BrandVo> getCategoryBrands(Long catId) {
+        QueryWrapper<CategoryBrandRelationEntity> wrapper = new QueryWrapper<CategoryBrandRelationEntity>()
+                .eq("catelog_id", catId);
+        List<BrandVo> list = this.list(wrapper).stream().map(item -> {
+            BrandVo brandVo = new BrandVo();
+            BeanUtils.copyProperties(item, brandVo);
+            return brandVo;
+        }).collect(Collectors.toList());
+        return list;
     }
 
 }
