@@ -1,6 +1,7 @@
 package com.kirito.kiritomall.coupon.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kirito.common.to.SkuReductionTo;
 import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.coupon.entity.SkuFullReductionEntity;
 
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface SkuFullReductionService extends IService<SkuFullReductionEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveSkuReduction(SkuReductionTo skuReductionTo);
 }
 

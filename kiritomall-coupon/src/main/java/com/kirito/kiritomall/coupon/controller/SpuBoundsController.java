@@ -1,14 +1,13 @@
 package com.kirito.kiritomall.coupon.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.kirito.common.to.SpuBoundsTo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.kirito.kiritomall.coupon.entity.SpuBoundsEntity;
 import com.kirito.kiritomall.coupon.service.SpuBoundsService;
@@ -41,7 +40,6 @@ public class SpuBoundsController {
         return R.ok().put("page", page);
     }
 
-
     /**
      * 信息
      */
@@ -56,10 +54,12 @@ public class SpuBoundsController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     //@RequiresPermissions("coupon:spubounds:save")
-    public R save(@RequestBody SpuBoundsEntity spuBounds){
-		spuBoundsService.save(spuBounds);
+    public R save(@RequestBody SpuBoundsTo spuBoundsTo){
+        SpuBoundsEntity spuBoundsEntity = new SpuBoundsEntity();
+        BeanUtils.copyProperties(spuBoundsTo,spuBoundsEntity);
+        spuBoundsService.save(spuBoundsEntity);
 
         return R.ok();
     }

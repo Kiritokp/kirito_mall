@@ -3,6 +3,7 @@ package com.kirito.kiritomall.coupon.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.kirito.common.to.SkuReductionTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,8 +59,8 @@ public class SkuFullReductionController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("coupon:skufullreduction:save")
-    public R save(@RequestBody SkuFullReductionEntity skuFullReduction){
-		skuFullReductionService.save(skuFullReduction);
+    public R save(@RequestBody SkuReductionTo skuReductionTo){
+		skuFullReductionService.saveSkuReduction(skuReductionTo);
 
         return R.ok();
     }
