@@ -25,6 +25,7 @@ import com.kirito.common.utils.PageUtils;
 import com.kirito.common.utils.Query;
 
 import com.kirito.kiritomall.product.dao.SpuInfoDao;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("spuInfoService")
@@ -34,6 +35,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     private SpuInfoService spuInfoService;
     @Autowired
     private SpuImagesService spuImagesService;
+    @Autowired
+    private SpuInfoDescService spuInfoDescService;
     @Autowired
     private AttrService attrService;
     @Autowired
@@ -57,6 +60,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
+    @Transactional
     @Override
     public void saveSpuInfo(SpuSaveVo vo) {
 
@@ -66,11 +70,14 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         spuInfoEntity.setCreateTime(new Date());
         spuInfoEntity.setUpdateTime(new Date());
         spuInfoService.save(spuInfoEntity);
+
         //2、保存Spu的描述图片 pms_spu_info_desc
         SpuInfoDescEntity spuInfoDescEntity = new SpuInfoDescEntity();
         List<String> decript = vo.getDecript();
         spuInfoDescEntity.setSpuId(spuInfoEntity.getId());
         spuInfoDescEntity.setDecript(String.join(",",decript));
+        spuInfoDescService.save(spuInfoDescEntity);
+
         //3、保存spu的图片集 pms_spu_images
         List<String> images = vo.getImages();
         spuImagesService.saveImages(spuInfoEntity.getId(),images);
@@ -159,5 +166,29 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 }
             }
         });
+    }
+
+    @Override
+    public PageUtils querySpuInfo(Map<String, Object> params) {
+        String catelogId = (String) params.get("catelogId");
+        String brandId= (String) params.get("brandId");
+        String status = (String) params.get("status");
+        String key = (String) params.get("key");
+
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(catelogId)){
+            wrapper.eq("catalog_id",catelogId);
+        }
+        if (!StringUtils.isEmpty(brandId)){
+            wrapper.eq("brand_id",brandId);
+        }
+        if (!StringUtils.isEmpty(status)){
+            wrapper.eq("publish_status",status);
+        }
+        if (!StringUtils.isEmpty(key)){
+            wrapper.eq("id",key).or().like("spu_name",key);
+        }
+        IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params), wrapper);
+        return new PageUtils(page);
     }
 }
