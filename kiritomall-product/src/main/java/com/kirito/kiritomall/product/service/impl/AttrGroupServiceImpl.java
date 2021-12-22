@@ -7,6 +7,7 @@ import com.kirito.kiritomall.product.service.AttrAttrgroupRelationService;
 import com.kirito.kiritomall.product.service.AttrService;
 import com.kirito.kiritomall.product.service.CategoryService;
 import com.kirito.kiritomall.product.vo.AttrGroupRelationVo;
+import com.kirito.kiritomall.product.vo.AttrGroupWithAttrsVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,4 +127,23 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         }
     }
 
+    @Override
+    public List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId) {
+        //1、查出当前分类下的所有属性分组
+        List<AttrGroupWithAttrsVo> attrGroupWithAttrsVos = this.list(new QueryWrapper<AttrGroupEntity>()
+                .eq("catelog_id", catelogId)).stream().map(attrGroupEntity -> {
+            AttrGroupWithAttrsVo attrGroupWithAttrsVo = new AttrGroupWithAttrsVo();
+            BeanUtils.copyProperties(attrGroupEntity, attrGroupWithAttrsVo);
+            //2、查出每个属性分组的所有属性
+            List<Long> attrIds = attrAttrgroupRelationService.list(new QueryWrapper<AttrAttrgroupRelationEntity>()
+                    .eq("attr_group_id", attrGroupEntity.getAttrGroupId())).stream().map(item -> {
+                return item.getAttrId();
+            }).collect(Collectors.toList());
+            List<AttrEntity> attrEntities = attrService.listByIds(attrIds);
+            attrGroupWithAttrsVo.setAttrs(attrEntities);
+            return attrGroupWithAttrsVo;
+        }).collect(Collectors.toList());
+
+        return attrGroupWithAttrsVos;
+    }
 }

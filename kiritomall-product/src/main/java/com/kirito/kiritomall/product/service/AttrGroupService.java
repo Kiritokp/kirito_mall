@@ -5,6 +5,7 @@ import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.product.entity.AttrEntity;
 import com.kirito.kiritomall.product.entity.AttrGroupEntity;
 import com.kirito.kiritomall.product.vo.AttrGroupRelationVo;
+import com.kirito.kiritomall.product.vo.AttrGroupWithAttrsVo;
 
 import java.util.List;
 import java.util.Map;
@@ -27,5 +28,7 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
     void saveAttrRelations(List<AttrGroupRelationVo> vos);
 
     void deleteAttrRelations(List<AttrGroupRelationVo> vos);
+
+    List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId);
 }
 

@@ -8,6 +8,7 @@ import com.kirito.kiritomall.product.entity.AttrEntity;
 import com.kirito.kiritomall.product.service.AttrAttrgroupRelationService;
 import com.kirito.kiritomall.product.service.CategoryService;
 import com.kirito.kiritomall.product.vo.AttrGroupRelationVo;
+import com.kirito.kiritomall.product.vo.AttrGroupWithAttrsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +63,14 @@ public class AttrGroupController {
     public R noattrList(@PathVariable("attrgroupId") Long attrgroupId,@RequestParam Map<String,Object> params){
         PageUtils page = attrGroupService.getNoAttrList(attrgroupId, params);
         return R.ok().put("page",page);
+    }
+    /**
+     * 获取当前分类下所有的属性分组及属性分组下关联的属性
+     */
+    @GetMapping("{catelogId}/withattr")
+    public R withattrList(@PathVariable("catelogId") Long catelogId){
+        List<AttrGroupWithAttrsVo> vos = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
+        return R.ok().put("data",vos);
     }
     /**
      * 新增属性与属性分组的关联关系
