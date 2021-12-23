@@ -1,5 +1,6 @@
 package com.kirito.kiritomall.ware.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,10 +19,16 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<PurchaseEntity> page = this.page(
-                new Query<PurchaseEntity>().getPage(params),
-                new QueryWrapper<PurchaseEntity>()
-        );
+        String status = (String) params.get("status");
+        String key = (String) params.get("key");
+        QueryWrapper<PurchaseEntity> wrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(status)){
+            wrapper.eq("status",status);
+        }
+        if (!StringUtils.isEmpty(key)){
+            wrapper.eq("id",key).or().like("assignee_name",key);
+        }
+        IPage<PurchaseEntity> page = this.page(new Query<PurchaseEntity>().getPage(params), wrapper);
 
         return new PageUtils(page);
     }
