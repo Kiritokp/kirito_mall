@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.5.68.208:8848
+  application:
+    name: kiritomall-search
+server:
+  port: 12000
