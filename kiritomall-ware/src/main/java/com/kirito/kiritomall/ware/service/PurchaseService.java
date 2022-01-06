@@ -3,6 +3,7 @@ package com.kirito.kiritomall.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.ware.entity.PurchaseEntity;
+import com.kirito.kiritomall.ware.vo.MergeVo;
 
 import java.util.Map;
 
@@ -18,5 +19,7 @@ public interface PurchaseService extends IService<PurchaseEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     PageUtils queryUnReceiveList(Map<String, Object> params);
+
+    void merge(MergeVo mergeVo);
 }
 
