@@ -21,6 +21,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.kirito.kiritomall</groupId>
             <artifactId>kiritomall-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>

@@ -31,16 +31,10 @@ import com.kirito.common.utils.R;
 @RequestMapping("coupon/coupon")
 public class CouponController {
 
-    @Value("${coupon.user.name}")
-    private String name;
 
     @Autowired
     private CouponService couponService;
 
-    @RequestMapping("test")
-    public R test(){
-        return R.ok().put("name",name);
-    }
     /**
      * 列表
      */
