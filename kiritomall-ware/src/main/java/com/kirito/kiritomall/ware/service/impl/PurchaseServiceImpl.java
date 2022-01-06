@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +65,6 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         //如果没有选择要合并的采购单则新建采购单
         if (purchaseId==null){
             PurchaseEntity purchaseEntity = new PurchaseEntity();
-            purchaseEntity.setCreateTime(new Date());
-            purchaseEntity.setUpdateTime(new Date());
             purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.CREATED.getCode());
             this.save(purchaseEntity);
             purchaseId=purchaseEntity.getId();
@@ -86,7 +85,6 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         //如果未新建采购单要修改采购单的更新时间
         PurchaseEntity purchaseEntity = new PurchaseEntity();
         purchaseEntity.setId(purchaseId);
-        purchaseEntity.setUpdateTime(new Date());
         this.updateById(purchaseEntity);
     }
 

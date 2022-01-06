@@ -82,8 +82,6 @@ public class PurchaseController {
     @RequestMapping("/save")
     //@RequiresPermissions("ware:purchase:save")
     public R save(@RequestBody PurchaseEntity purchase){
-        purchase.setUpdateTime(new Date());
-        purchase.setCreateTime(new Date());
 		purchaseService.save(purchase);
 
         return R.ok();
