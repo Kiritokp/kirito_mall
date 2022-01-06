@@ -1,5 +1,6 @@
 package com.kirito.kiritomall.ware.service.impl;
 
+import com.kirito.common.constant.WareConstant;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Map;
@@ -28,6 +29,18 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         if (!StringUtils.isEmpty(key)){
             wrapper.eq("id",key).or().like("assignee_name",key);
         }
+        IPage<PurchaseEntity> page = this.page(new Query<PurchaseEntity>().getPage(params), wrapper);
+
+        return new PageUtils(page);
+    }
+
+    @Override
+    public PageUtils queryUnReceiveList(Map<String, Object> params) {
+        QueryWrapper<PurchaseEntity> wrapper = new QueryWrapper<>();
+
+        wrapper.eq("status", WareConstant.PurchaseStatusEnum.CREATED.getCode())
+                .or().eq("status",WareConstant.PurchaseStatusEnum.ASSIGNED.getCode());
+
         IPage<PurchaseEntity> page = this.page(new Query<PurchaseEntity>().getPage(params), wrapper);
 
         return new PageUtils(page);
