@@ -88,4 +88,24 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         this.updateById(purchaseEntity);
     }
 
+    @Override
+    public void received(List<Long> ids) {
+        //领取采购单
+        //TODO 采购单的状态必须是新建或者已分配
+        //领取过状态更新为已领取
+        List<PurchaseEntity> purchaseEntities = this.listByIds(ids);
+        List<PurchaseEntity> collect = purchaseEntities.stream().map(purchaseEntity -> {
+            purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.RECEIVE.getCode());
+            return purchaseEntity;
+        }).collect(Collectors.toList());
+        this.updateBatchById(collect);
+        //同时采购单下的采购需求的状态要更新为正在采购
+        List<PurchaseDetailEntity> purchaseDetailEntities = purchaseDetailService.list(new QueryWrapper<PurchaseDetailEntity>().in("purchase_id", ids));
+        List<PurchaseDetailEntity> list = purchaseDetailEntities.stream().map(purchaseDetailEntity -> {
+            purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.BUYING.getCode());
+            return purchaseDetailEntity;
+        }).collect(Collectors.toList());
+
+        purchaseDetailService.updateBatchById(list);
+    }
 }

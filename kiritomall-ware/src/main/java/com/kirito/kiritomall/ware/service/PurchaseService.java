@@ -5,6 +5,7 @@ import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.ware.entity.PurchaseEntity;
 import com.kirito.kiritomall.ware.vo.MergeVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,5 +22,7 @@ public interface PurchaseService extends IService<PurchaseEntity> {
     PageUtils queryUnReceiveList(Map<String, Object> params);
 
     void merge(MergeVo mergeVo);
+
+    void received(List<Long> ids);
 }
 
