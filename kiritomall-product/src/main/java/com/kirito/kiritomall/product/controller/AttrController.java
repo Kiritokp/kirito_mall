@@ -1,14 +1,14 @@
 package com.kirito.kiritomall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kirito.kiritomall.product.entity.AttrAttrgroupRelationEntity;
 import com.kirito.kiritomall.product.entity.AttrGroupEntity;
-import com.kirito.kiritomall.product.service.AttrAttrgroupRelationService;
-import com.kirito.kiritomall.product.service.AttrGroupService;
-import com.kirito.kiritomall.product.service.CategoryService;
+import com.kirito.kiritomall.product.entity.ProductAttrValueEntity;
+import com.kirito.kiritomall.product.service.*;
 import com.kirito.kiritomall.product.vo.AttrRespVo;
 import com.kirito.kiritomall.product.vo.AttrVo;
 import org.springframework.beans.BeanUtils;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.kirito.kiritomall.product.entity.AttrEntity;
-import com.kirito.kiritomall.product.service.AttrService;
 import com.kirito.common.utils.PageUtils;
 import com.kirito.common.utils.R;
 
@@ -35,6 +34,19 @@ public class AttrController {
 
     @Autowired
     private AttrService attrService;
+    @Autowired
+    private ProductAttrValueService productAttrValueService;
+
+    /**
+     * 获取spu规格
+     */
+    @GetMapping("/base/listforspu/{spuId}")
+    //@RequiresPermissions("product:attr:list")
+    public R spuInfo(@PathVariable("spuId")Long spuId){
+        List<ProductAttrValueEntity> data=productAttrValueService.getSpuInfo(spuId);
+
+        return R.ok().put("data", data);
+    }
 
     /**
      * 列表
@@ -62,7 +74,7 @@ public class AttrController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{attrId}")
+    @GetMapping("/info/{attrId}")
     //@RequiresPermissions("product:attr:info")
     public R info(@PathVariable("attrId") Long attrId){
 		AttrRespVo attrRespVo=attrService.getAttrInfo(attrId);
@@ -73,7 +85,7 @@ public class AttrController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     //@RequiresPermissions("product:attr:save")
     public R save(@RequestBody AttrVo attrVo){
 		attrService.saveDetail(attrVo);
@@ -84,10 +96,21 @@ public class AttrController {
     /**
      * 修改
      */
-    @RequestMapping("/update")
+    @PostMapping("/update")
     //@RequiresPermissions("product:attr:update")
     public R update(@RequestBody AttrVo attrVo){
 		attrService.updateAttr(attrVo);
+
+        return R.ok();
+    }
+
+    /**
+     * 修改
+     */
+    @PostMapping("/update/{spuId}")
+    //@RequiresPermissions("product:attr:update")
+    public R updateSpuInfo(@PathVariable("spuId")Long spuId,@RequestBody List<ProductAttrValueEntity> productAttrValueEntities){
+        productAttrValueService.updateSpuIAttr(spuId,productAttrValueEntities);
 
         return R.ok();
     }
