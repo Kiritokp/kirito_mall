@@ -3,6 +3,7 @@ package com.kirito.kiritomall.ware.service.impl;
 import com.kirito.common.constant.WareConstant;
 import com.kirito.kiritomall.ware.entity.PurchaseDetailEntity;
 import com.kirito.kiritomall.ware.service.PurchaseDetailService;
+import com.kirito.kiritomall.ware.service.WareSkuService;
 import com.kirito.kiritomall.ware.vo.MergeVo;
 import com.kirito.kiritomall.ware.vo.PurchaseDetailDoneVo;
 import com.kirito.kiritomall.ware.vo.PurchaseDoneVo;
@@ -24,6 +25,7 @@ import com.kirito.common.utils.Query;
 import com.kirito.kiritomall.ware.dao.PurchaseDao;
 import com.kirito.kiritomall.ware.entity.PurchaseEntity;
 import com.kirito.kiritomall.ware.service.PurchaseService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("purchaseService")
@@ -31,6 +33,8 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
     @Autowired
     private PurchaseDetailService purchaseDetailService;
+    @Autowired
+    private WareSkuService wareSkuService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -110,6 +114,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         purchaseDetailService.updateBatchById(list);
     }
 
+    @Transactional
     @Override
     public void finish(PurchaseDoneVo purchaseDoneVo) {
         //完成采购
@@ -124,7 +129,9 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
                 purchaseDetailEntity.setStatus(purchaseDetailDoneVo.getStatus());
             }else {
                 purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.FINISH.getCode());
-                //TODO 将成功采购的商品入库
+                //将成功采购的商品入库
+                PurchaseDetailEntity entity = purchaseDetailService.getById(purchaseDetailDoneVo.getItemId());
+                wareSkuService.addStock(entity.getSkuId(),entity.getWareId(),entity.getSkuNum());
             }
             return purchaseDetailEntity;
         }).collect(Collectors.toList());
