@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.kirito.kiritomall.ware.vo.MergeVo;
+import com.kirito.kiritomall.ware.vo.PurchaseDoneVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +34,16 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
+    /**
+     * 完成采购
+     */
+    @RequestMapping("/done")
+    //@RequiresPermissions("ware:purchase:list")
+    public R finish(@RequestBody PurchaseDoneVo purchaseDoneVo){
+        purchaseService.finish(purchaseDoneVo);
+
+        return R.ok();
+    }
     /**
      * 领取采购单
      */

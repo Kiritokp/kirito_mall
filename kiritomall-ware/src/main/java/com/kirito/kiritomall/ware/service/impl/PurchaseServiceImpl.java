@@ -4,14 +4,15 @@ import com.kirito.common.constant.WareConstant;
 import com.kirito.kiritomall.ware.entity.PurchaseDetailEntity;
 import com.kirito.kiritomall.ware.service.PurchaseDetailService;
 import com.kirito.kiritomall.ware.vo.MergeVo;
+import com.kirito.kiritomall.ware.vo.PurchaseDetailDoneVo;
+import com.kirito.kiritomall.ware.vo.PurchaseDoneVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -69,7 +70,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
             this.save(purchaseEntity);
             purchaseId=purchaseEntity.getId();
         }
-        //TODO 确认采购单的状态是0或者1才可以合并。
+        //TODO 确认采购单的状态是0或者1才可以合并
         //更新采购需求的采购单id和状态（新建->已分配）
         List<Long> items = mergeVo.getItems();
         Long finalPurchaseId = purchaseId;
@@ -107,5 +108,35 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         }).collect(Collectors.toList());
 
         purchaseDetailService.updateBatchById(list);
+    }
+
+    @Override
+    public void finish(PurchaseDoneVo purchaseDoneVo) {
+        //完成采购
+        //采购单下的采购需求的状态变为已完成，如果采购失败要注明原因，状态更改为采购失败
+        List<PurchaseDetailDoneVo> items = purchaseDoneVo.getItems();
+        AtomicBoolean flag= new AtomicBoolean(true);
+        List<PurchaseDetailEntity> collect = items.stream().map(purchaseDetailDoneVo -> {
+            PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();
+            purchaseDetailEntity.setId(purchaseDetailDoneVo.getItemId());
+            if (purchaseDetailDoneVo.getStatus()==WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode()){
+                flag.set(false);
+                purchaseDetailEntity.setStatus(purchaseDetailDoneVo.getStatus());
+            }else {
+                purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.FINISH.getCode());
+                //TODO 将成功采购的商品入库
+            }
+            return purchaseDetailEntity;
+        }).collect(Collectors.toList());
+        purchaseDetailService.updateBatchById(collect);
+        //若采购单下的采购项全部采购完成则采购单的状态变为已完成,否则采购单的状态更改为有异常
+        Long purchaseId = purchaseDoneVo.getId();
+        PurchaseEntity purchaseEntity = new PurchaseEntity();
+        purchaseEntity.setId(purchaseId);
+        if (flag.get()){
+            purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.FINISH.getCode());
+        }
+        purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.HASERROR.getCode());
+        this.updateById(purchaseEntity);
     }
 }

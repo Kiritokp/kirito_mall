@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.ware.entity.PurchaseEntity;
 import com.kirito.kiritomall.ware.vo.MergeVo;
+import com.kirito.kiritomall.ware.vo.PurchaseDoneVo;
 
 import java.util.List;
 import java.util.Map;
@@ -24,5 +25,8 @@ public interface PurchaseService extends IService<PurchaseEntity> {
     void merge(MergeVo mergeVo);
 
     void received(List<Long> ids);
+
+    void finish(PurchaseDoneVo purchaseDoneVo);
+
 }
 
