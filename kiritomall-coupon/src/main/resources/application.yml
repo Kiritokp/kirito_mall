@@ -2,17 +2,14 @@ server:
   port: 7000
 
 spring:
-  datasource:
-    username: root
-    password: root
-    url: jdbc:mysql://121.5.68.208:3306/gulimall_sms?serverTimezone=GMT%2B8&characterEncoding=UTF-8
-    driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
       discovery:
         server-addr: 121.5.68.208:8848
   application:
     name: kiritomall-coupon
+  profiles:
+    active: dev
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

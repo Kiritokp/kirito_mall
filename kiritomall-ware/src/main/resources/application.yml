@@ -2,18 +2,14 @@ server:
   port: 11000
 
 spring:
-  datasource:
-    username: root
-    password: root
-    url: jdbc:mysql://121.5.68.208:3306/gulimall_wms?serverTimezone=GMT%2B8&characterEncoding=UTF-8
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  profiles:
+    active: dev
   cloud:
     nacos:
       discovery:
         server-addr: 121.5.68.208:8848
   application:
     name: kiritomall-ware
-
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
 
