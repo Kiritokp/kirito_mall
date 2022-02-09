@@ -2,12 +2,15 @@ package com.kirito.kiritomall.ware.service.impl;
 
 import com.kirito.common.utils.R;
 import com.kirito.kiritomall.ware.feign.ProductFeignService;
+import com.kirito.kiritomall.ware.vo.SkuHasStockVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -66,6 +69,21 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }else {
             baseMapper.addStock(skuId,wareId,skuNum);
         }
+    }
+
+    @Override
+    public List<SkuHasStockVo> getSkuHasStock(List<Long> skuIds) {
+        List<SkuHasStockVo> collect = skuIds.stream().map(sku -> {
+            SkuHasStockVo skuHasStockVo = new SkuHasStockVo();
+            WareSkuEntity wareSkuEntity = this.getById(sku);
+            //select sum(stock-stock_locked) from wms_ware_sku WHERE sku_id=1;
+            //查询当前sku的总库存量
+            Long count = baseMapper.getHasStock(sku);
+            skuHasStockVo.setSkuId(sku);
+            skuHasStockVo.setHasStock(count>0);
+            return skuHasStockVo;
+        }).collect(Collectors.toList());
+        return collect;
     }
 
 }

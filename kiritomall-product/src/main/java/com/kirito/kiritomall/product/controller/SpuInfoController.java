@@ -30,6 +30,16 @@ public class SpuInfoController {
     @Autowired
     private CouponFeignService couponFeignService;
 
+
+    /**
+     * 商品上架
+     */
+    @RequestMapping("/{spuId}/up")
+    //@RequiresPermissions("product:spuinfo:list")
+    public R spuUp(@PathVariable("spuId") Long spuId){
+        spuInfoService.up(spuId);
+        return R.ok();
+    }
     /**
      * 列表
      */
@@ -40,7 +50,6 @@ public class SpuInfoController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息
