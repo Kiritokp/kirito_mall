@@ -6,6 +6,7 @@ import com.kirito.kiritomall.product.entity.AttrEntity;
 import com.kirito.kiritomall.product.vo.AttrRespVo;
 import com.kirito.kiritomall.product.vo.AttrVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,5 +28,11 @@ public interface AttrService extends IService<AttrEntity> {
 
     void updateAttr(AttrVo attrVo);
 
+    /**
+     * 在指定的所有属性集合里，挑选出检索属性
+     * @param attrIds
+     * @return
+     */
+    List<Long> selectSearchAttrIds(List<Long> attrIds);
 }
 
