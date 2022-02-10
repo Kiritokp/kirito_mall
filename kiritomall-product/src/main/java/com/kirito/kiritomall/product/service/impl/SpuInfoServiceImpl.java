@@ -1,5 +1,7 @@
 package com.kirito.kiritomall.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.kirito.common.constant.ProductConstant;
 import com.kirito.common.to.SkuHasStockVo;
 import com.kirito.common.to.SkuReductionTo;
 import com.kirito.common.to.SpuBoundsTo;
@@ -7,6 +9,7 @@ import com.kirito.common.to.es.SkuEsModel;
 import com.kirito.common.utils.R;
 import com.kirito.kiritomall.product.entity.*;
 import com.kirito.kiritomall.product.feign.CouponFeignService;
+import com.kirito.kiritomall.product.feign.SearchFeignService;
 import com.kirito.kiritomall.product.feign.WareFeignService;
 import com.kirito.kiritomall.product.service.*;
 import com.kirito.kiritomall.product.vo.*;
@@ -56,6 +59,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     private CategoryService categoryService;
     @Autowired
     private WareFeignService wareFeignService;
+    @Autowired
+    private SearchFeignService searchFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -226,15 +231,17 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         //TODO 1、发送远程调用，库存系统查询是否有库存
         Map<Long, Boolean> stockMap=null;
         try {
-            R<List<SkuHasStockVo>> skuHasStock = wareFeignService.getSkuHasStock(skuIds);
+            R r = wareFeignService.getSkuHasStock(skuIds);
+            TypeReference<List<SkuHasStockVo>> typeReference = new TypeReference<List<SkuHasStockVo>>() {
+            };
             //处理成map(skuId,hasStock)！
-            stockMap = skuHasStock.getData().stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, item -> item.getHasStock()));
+            stockMap = r.getData(typeReference).stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, item -> item.getHasStock()));
         }catch (Exception e){
             log.error("库存服务查询异常：原因{}",e);
         }
         //2、封装每个sku信息
         Map<Long, Boolean> finalStockMap = stockMap;
-        List<SkuEsModel> uoProducts = skus.stream().map(sku -> {
+        List<SkuEsModel> upProducts = skus.stream().map(sku -> {
             //组装需要的数据
             SkuEsModel skuEsModel = new SkuEsModel();
             BeanUtils.copyProperties(sku, skuEsModel);
@@ -273,5 +280,16 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return skuEsModel;
         }).collect(Collectors.toList());
         //TODO 5、将数据发送给es进行保存
+        R r = searchFeignService.productStatusUp(upProducts);
+        if (r.getCode()==0){
+            //远程调用成功
+            //TODO 6.修改spu的状态
+            baseMapper.updateSpuStatus(spuId, ProductConstant.PublishStatusEnum.SPU_UP.getCode());
+        }else {
+            //远程调用失败
+            //TODO 7、重复调用？接口幂等性；重试机制？
+            //Feign
+        }
+
     }
 }
