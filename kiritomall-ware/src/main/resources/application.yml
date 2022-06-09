@@ -7,7 +7,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 121.5.68.208:8848
+        server-addr: 192.168.196.128:8848
   application:
     name: kiritomall-ware
   jackson:

@@ -3,6 +3,7 @@ package com.kirito.kiritomall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.product.entity.CategoryEntity;
+import com.kirito.kiritomall.product.vo.Catelog2Vo;
 
 import java.util.List;
 import java.util.Map;
@@ -23,5 +24,9 @@ public interface CategoryService extends IService<CategoryEntity> {
     void removeMenusByIds(List<Long> asList);
 
     Long[] findCatelogPath(Long catelogId);
+
+    List<CategoryEntity> getLevel1Categorys();
+
+    Map<String, List<Catelog2Vo>> getCatelogJson();
 }
 

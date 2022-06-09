@@ -5,7 +5,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 121.5.68.208:8848
+        server-addr: 192.168.196.128:8848
     gateway:
       discovery:
         locator:
@@ -46,6 +46,16 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
+
+        - id: kiritomall_host_route
+          uri: lb://kiritomall-product
+          predicates:
+            - Host=kiritomall.com
+
+        - id: kiritomall_search_route
+          uri: lb://kiritomall-search
+          predicates:
+            - Host=search.kiritomall.com
 
   application:
     name: kiritomall-gateway
