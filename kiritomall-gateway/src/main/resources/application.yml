@@ -50,7 +50,7 @@ spring:
         - id: kiritomall_host_route
           uri: lb://kiritomall-product
           predicates:
-            - Host=kiritomall.com
+            - Host=kiritomall.com,item.kiritomall.com
 
         - id: kiritomall_search_route
           uri: lb://kiritomall-search
