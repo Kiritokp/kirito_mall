@@ -3,7 +3,9 @@ package com.kirito.kiritomall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kirito.common.utils.PageUtils;
 import com.kirito.kiritomall.product.entity.SkuSaleAttrValueEntity;
+import com.kirito.kiritomall.product.vo.skuitemvo.SkuItemSaleAttrsVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +18,7 @@ import java.util.Map;
 public interface SkuSaleAttrValueService extends IService<SkuSaleAttrValueEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    List<SkuItemSaleAttrsVo> getSaleAttrsBySpuId(Long spuId);
 }
 

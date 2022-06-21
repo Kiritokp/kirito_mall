@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @MapperScan("com.kirito.kiritomall.search.dao")
 @ComponentScan(basePackages = "com.kirito.kiritomall")
-@EnableFeignClients(basePackages = "com.kirito.kiritomall.product.feign") //开启远程调用
+@EnableFeignClients(basePackages = "com.kirito.kiritomall.search.feign") //开启远程调用
 @EnableDiscoveryClient
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class KiritomallSearchApplication {

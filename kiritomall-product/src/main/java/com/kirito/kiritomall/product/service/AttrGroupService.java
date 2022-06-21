@@ -6,6 +6,7 @@ import com.kirito.kiritomall.product.entity.AttrEntity;
 import com.kirito.kiritomall.product.entity.AttrGroupEntity;
 import com.kirito.kiritomall.product.vo.AttrGroupRelationVo;
 import com.kirito.kiritomall.product.vo.AttrGroupWithAttrsVo;
+import com.kirito.kiritomall.product.vo.skuitemvo.SpuItemAttrGroupVo;
 
 import java.util.List;
 import java.util.Map;
@@ -30,5 +31,7 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
     void deleteAttrRelations(List<AttrGroupRelationVo> vos);
 
     List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId);
+
+    List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId);
 }
 
