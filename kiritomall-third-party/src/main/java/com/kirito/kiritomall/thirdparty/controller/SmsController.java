@@ -27,7 +27,7 @@ public class SmsController {
      * @param phone
      * @return
      */
-    @PostMapping()
+    @PostMapping("/sendMessage")
     public R sendMessage(@RequestParam("code") String code,@RequestParam("phone") String phone){
         HashMap<String, Object> param = new HashMap<>();
         param.put("code",code);

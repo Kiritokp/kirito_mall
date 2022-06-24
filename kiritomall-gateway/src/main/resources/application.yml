@@ -57,6 +57,11 @@ spring:
           predicates:
             - Host=search.kiritomall.com
 
+        - id: kiritomall_auth_route
+          uri: lb://kiritomall-auth-server
+          predicates:
+            - Host=auth.kiritomall.com
+
   application:
     name: kiritomall-gateway
 

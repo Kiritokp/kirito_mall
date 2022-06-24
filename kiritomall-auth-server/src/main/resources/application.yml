@@ -1,0 +1,30 @@
+server:
+  port: 20000
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.196.128:8848
+  application:
+    name: kiritomall-auth-server
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: false
+  redis:
+    host: 192.168.196.128
+    port: 6379
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+#  mybatis-plus sql日志打印
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
